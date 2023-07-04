@@ -1,9 +1,12 @@
 const express = require('express');
 const route = express.Router()
-var Userdb = require('../model/model');
 
 const services = require('../services/render');
-const controller = require('../controller/controller');
+
+const userController = require('../controller/userController');
+const lodgingController = require('../controller/lodgingController');
+const bookingController = require('../controller/bookingController');
+const authController = require('../controller/authController');
 
 /**
  *  @description Root Route
@@ -23,18 +26,33 @@ route.get('/add-user', services.add_user)
  */
 route.get('/update-user', services.update_user)
 
+//API
 
-// API
-route.post('/api/users', controller.create);
-route.get('/api/users', controller.find);
-route.put('/api/users/:id', controller.update);
-route.delete('/api/users/:id', controller.delete);
-route.get('/usuarios', (req,res)=>{
-    Userdb
-    .find()
-    .then((data)=>res.json(data))
-    .catch((error)=>res.json({message: error}));
-});
+// Rutas para el modelo User
+route.post('/api/users', userController.createUser);
+route.get('/api/users', userController.getUsers);
+route.get('/api/users/:id', userController.getUserById);
+route.put('/api/users/:id', userController.updateUser);
+route.delete('/api/users/:id', userController.deleteUser);
 
+// Rutas para el modelo Lodging
+route.post('/api/lodgings', lodgingController.createLodging);
+route.get('/api/lodgings', lodgingController.getLodgings);
+route.get('/api/lodgings/:id', lodgingController.getLodgingById);
+route.put('/api/lodgings/:id', lodgingController.updateLodging);
+route.delete('/api/lodgings/:id', lodgingController.deleteLodging);
 
-module.exports = route
+// Rutas para el modelo Booking
+route.post('/api/bookings', bookingController.createBooking);
+route.get('/api/bookings', bookingController.getBookings);
+route.get('/api/bookings/:id', bookingController.getBookingById);
+route.put('/api/bookings/:id', bookingController.updateBooking);
+route.delete('/api/bookings/:id', bookingController.deleteBooking);
+
+// Ruta para iniciar sesión
+route.post('/login', authController.login);
+
+// Ruta para obtener lodgings por ID
+route.get('/user/:id/lodgings', lodgingController.getLodgingsByUserId);
+
+module.exports = route;

@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const User = require('../model/user');
 
 exports.homeRoutes = (req, res) => {
     // Make a get request to /api/users
@@ -19,7 +19,7 @@ exports.add_user = (req, res) =>{
 }
 
 exports.update_user = (req, res) =>{
-    axios.get('http://localhost:3030/api/users', { params : { id : req.query.id }})
+    axios.get('http://localhost:8080/api/users', { params : { id : req.query.id }})
         .then(function(userdata){
             res.render("update_user", { user : userdata.data})
         })
