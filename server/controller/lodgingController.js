@@ -10,7 +10,7 @@ exports.getLodgings = async (req, res) => {
   }
 };
 
-// Crear un nuevo hospedaje
+/*// Crear un nuevo hospedaje
 exports.createLodging = async (req, res) => {
   try {
     const newLodging = new Lodging(req.body);
@@ -19,6 +19,59 @@ exports.createLodging = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Error al crear un nuevo hospedaje' });
   }
+};*/
+
+exports.createLodging = (req, res) => {
+  // Obtener los datos del hospedaje del cuerpo de la solicitud
+  const lodgingData = req.body;
+
+  // Obtener el usuario actualmente autenticado de la sesión
+  const user = req.session.user;
+
+  // Crear el nuevo objeto de hospedaje
+  const newLodging = new Lodging({
+    name: lodgingData.name,
+    location: lodgingData.location,
+    num_rooms: lodgingData.num_rooms,
+    price: lodgingData.price,
+    image: lodgingData.image
+  });
+
+  // Guarda el hospedaje en la base de datos
+  newLodging.save((err, lodging) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error de servidor');
+    }
+
+    // Agrega el ID del nuevo hospedaje al arreglo lodgings del usuario
+    user.lodgings.push(lodging._id);
+
+    // Guarda los cambios en el usuario
+    user.findByIdAndUpdate(
+      userId,
+      { $push: { lodgings: lodging._id } },
+      { new: true },
+      (err, updatedUser) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send('Error de servidor');
+        }
+
+        // El hospedaje se ha creado y asignado correctamente al usuario
+        res.json(lodging);
+      }
+    );
+    /*user.save((err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('Error de servidor');
+      }
+
+      // El hospedaje se ha creado y asignado correctamente al usuario
+      res.json(lodging);
+    });*/
+  });
 };
 
 // Obtener un hospedaje por su ID
@@ -68,3 +121,4 @@ exports.getLodgingsByUserId = (req, res) => {
     }
   });
 };
+

@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const bodyparser = require("body-parser");
@@ -16,6 +17,11 @@ const PORT = process.env.PORT || 8080
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cors())
+app.use(session({
+    secret: 'mi_clave_secreta',
+    resave: false,
+    saveUninitialized: false
+  }));
 
 // mongodb connection
 connectDB();

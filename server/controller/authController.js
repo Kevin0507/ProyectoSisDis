@@ -26,7 +26,7 @@ exports.login = (req, res) => {
       if (user.password !== password) {
         return res.status(401).send('Contraseña incorrecta');
       }
-      
+      req.session.user = user;
       res.json(user);
 
     });
