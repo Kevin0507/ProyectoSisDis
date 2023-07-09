@@ -1,4 +1,5 @@
 const Lodging = require('../model/lodging');
+const User = require('../model/user');
 
 // Obtener todos los hospedajes
 exports.getLodgings = async (req, res) => {
@@ -21,20 +22,21 @@ exports.createLodging = async (req, res) => {
   }
 };*/
 
-exports.createLodging = (req, res) => {
+exports.createLodging = async (req, res) => {
+
   // Obtener los datos del hospedaje del cuerpo de la solicitud
-  const lodgingData = req.body;
+  const formularioData = req.body;
 
-  // Obtener el usuario actualmente autenticado de la sesión
-  const user = req.session.user;
-
+  // Se obtiene el usuario que está creando el hospedaje
+  const user = await User.findById(formularioData._id);
+  
   // Crear el nuevo objeto de hospedaje
   const newLodging = new Lodging({
-    name: lodgingData.name,
-    location: lodgingData.location,
-    num_rooms: lodgingData.num_rooms,
-    price: lodgingData.price,
-    image: lodgingData.image
+    name: formularioData.name,
+    location: formularioData.location,
+    num_rooms: formularioData.num_rooms,
+    price: formularioData.price,
+    image: formularioData.image
   });
 
   // Guarda el hospedaje en la base de datos
@@ -48,21 +50,7 @@ exports.createLodging = (req, res) => {
     user.lodgings.push(lodging._id);
 
     // Guarda los cambios en el usuario
-    user.findByIdAndUpdate(
-      userId,
-      { $push: { lodgings: lodging._id } },
-      { new: true },
-      (err, updatedUser) => {
-        if (err) {
-          console.log(err);
-          return res.status(500).send('Error de servidor');
-        }
-
-        // El hospedaje se ha creado y asignado correctamente al usuario
-        res.json(lodging);
-      }
-    );
-    /*user.save((err) => {
+    user.save((err) => {
       if (err) {
         console.log(err);
         return res.status(500).send('Error de servidor');
@@ -70,7 +58,7 @@ exports.createLodging = (req, res) => {
 
       // El hospedaje se ha creado y asignado correctamente al usuario
       res.json(lodging);
-    });*/
+    });
   });
 };
 

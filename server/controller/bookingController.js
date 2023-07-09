@@ -1,4 +1,6 @@
 const Booking = require('../model/booking');
+const User = require('../model/user');
+const Lodging = require('../model/lodging');
 
 // Obtener todas las reservas
 exports.getBookings = async (req, res) => {
