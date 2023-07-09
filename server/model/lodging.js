@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const Booking = require('./booking');
+const User = require('./user');
 
 const lodgingSchema = new mongoose.Schema({
+    userDueño:{ type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     name: {
         type: String,
         required: true

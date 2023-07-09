@@ -54,3 +54,8 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar el usuario' });
   }
 };
+
+//Obtener usuario por su correo
+exports.getUserByEmail = (email) => {
+  return User.findOne({ email: email });
+};

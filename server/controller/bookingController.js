@@ -1,5 +1,6 @@
 const Booking = require('../model/booking');
 const User = require('../model/user');
+const UserController = require('./userController');
 const Lodging = require('../model/lodging');
 
 // Obtener todas las reservas
@@ -14,13 +15,51 @@ exports.getBookings = async (req, res) => {
 
 // Crear una nueva reserva
 exports.createBooking = async (req, res) => {
-  try {
-    const newBooking = new Booking(req.body);
-    const booking = await newBooking.save();
-    res.json(booking);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al crear una nueva reserva' });
-  }
+  
+  //Se obtienen los datos del formulario para crear una reserva
+  const formularioReserva = req.body;
+
+  //Se obtiene el hospedaje del que se desea hacer la reserva
+  const lodging = await Lodging.findById(formularioReserva.idLodging);
+  //Se obtiene el usuario que ha reservado
+  const cliente = await UserController.getUserByEmail(formularioReserva.email)
+
+  //Se crea la reserva con los datos necesarios de "formularioReserva"
+  const newBooking = new Booking({
+    userDueño: lodging.userDueño,
+    userCliente: cliente.id,
+    date: formularioReserva.date,
+    num_days: formularioReserva.num_days,
+    lodging: lodging.id
+  })
+  //Se guarda el Booking
+  newBooking.save((err, booking) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error de servidor');
+    }
+    // Se agrega el ID del nuevo booking al arreglo bookings del user
+    cliente.bookings.push(booking._id);
+    cliente.save((err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('Error de servidor');
+      }
+    });
+    // Agrega el ID del nuevo booking al arreglo bookings del lodging
+    lodging.bookings.push(booking._id);
+
+    // Guarda los cambios en el usuario
+    lodging.save((err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).send('Error de servidor');
+      }
+
+      // El hospedaje se ha creado y asignado correctamente al usuario
+      res.json(booking);
+    });
+  });
 };
 
 // Obtener una reserva por su ID

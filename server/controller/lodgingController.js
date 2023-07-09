@@ -29,9 +29,10 @@ exports.createLodging = async (req, res) => {
 
   // Se obtiene el usuario que está creando el hospedaje
   const user = await User.findById(formularioData._id);
-  
+
   // Crear el nuevo objeto de hospedaje
   const newLodging = new Lodging({
+    userDueño: formularioData._id,
     name: formularioData.name,
     location: formularioData.location,
     num_rooms: formularioData.num_rooms,
