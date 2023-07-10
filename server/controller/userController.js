@@ -1,4 +1,5 @@
 const User = require('../model/user');
+const Lodging = require('../model/lodging');
 
 // Obtener todos los usuarios
 exports.getUsers = async (req, res) => {
@@ -58,4 +59,17 @@ exports.deleteUser = async (req, res) => {
 //Obtener usuario por su correo
 exports.getUserByEmail = (email) => {
   return User.findOne({ email: email });
+};
+
+//Obtener todos los hospedajes
+exports.getLodgingsByUserId = async (req, res) => {
+  try {
+    //Obtener el usuario
+    const user = await User.findById(req.params.id);
+    //Obtener los lodgings
+    const lodgings = await Lodging.find({ _id: { $in: user.lodgings } });
+    res.json(lodgings);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el usuario' });
+  }
 };

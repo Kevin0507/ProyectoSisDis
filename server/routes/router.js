@@ -34,6 +34,7 @@ route.get('/api/users', userController.getUsers);
 route.get('/api/users/:id', userController.getUserById);
 route.put('/api/users/:id', userController.updateUser);
 route.delete('/api/users/:id', userController.deleteUser);
+route.get('/api/users/:id/lodgings', userController.getLodgingsByUserId);
 
 // Rutas para el modelo Lodging
 route.post('/api/lodgings', lodgingController.createLodging);
